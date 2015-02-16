@@ -195,11 +195,15 @@ function alsabar.notify()
 -- begin customized notifications
      	local preset =
 	{
-		height = 75,
-		width = 300,
+--		height = 75,
+--		width = 300,
 		font = alsabar.notifications.font,
 		timeout = 1.5,
 		opacity = 0.9,
+		--border_width = 12,			--specified in rc.lua
+		--border_color = '#2B292E',		--specified in rc.lua
+		hover_timeout    	= nil,
+		
 	}
 	local i = 1;
 	while alsabar.notifications.icons[i + 1] ~= nil
