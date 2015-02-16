@@ -26,7 +26,7 @@ local setmetatable = setmetatable
 -- lain.widgets.alsabar
 local alsabar = {
     channel = "Master",
-    step    = "5%",
+    step    = "2%",
 
     colors = {
         background = beautiful.bg_normal,
@@ -38,54 +38,33 @@ local alsabar = {
     mixer    = terminal .. " -e alsamixer",
 
     notifications = {
-        font      = beautiful.font:sub(beautiful.font:find(""), beautiful.font:find(" ")),
-        font_size = "11",
-        color     = beautiful.fg_normal,
-        bar_size  = 18,
-        screen    = 1
+        --############################
+        --font      = beautiful.font:sub(beautiful.font:find(""), beautiful.font:find(" ")),
+        --font_size = "11",
+        --color     = beautiful.fg_normal,
+        --bar_size  = 18,
+        --screen    = 1
+        --############################
+                
+        	    icons =
+	       {
+		  -- the first item is the 'muted' icon
+		  "/usr/share/icons/gnome/48x48/status/audio-volume-muted.png",
+		  -- the rest of the items correspond to intermediate volume levels - you can have as many as you want (but must be >= 1)
+		  "/usr/share/icons/gnome/48x48/status/audio-volume-low.png",
+		  "/usr/share/icons/gnome/48x48/status/audio-volume-medium.png",
+		  "/usr/share/icons/gnome/48x48/status/audio-volume-high.png"
+	       },
+	    font = "Monospace 10", -- must be a monospace font for the bar to be sized consistently
+	    icon_size = 48,
+	    bar_size = 25 -- adjust to fit your font if the bar doesn't fit
     },
 
     _current_level = 0,
     _muted         = false
 }
 
-function alsabar.notify()
-    alsabar.update()
 
-    local preset = {
-        title   = "",
-        text    = "",
-        timeout = 4,
-        screen  = alsabar.notifications.screen,
-        font    = alsabar.notifications.font .. " " ..
-                  alsabar.notifications.font_size,
-        fg      = alsabar.notifications.color
-    }
-
-    if alsabar._muted
-    then
-        preset.title = alsabar.channel .. " - Muted"
-    else
-        preset.title = alsabar.channel .. " - " .. alsabar._current_level .. "%"
-    end
-
-    int = math.modf((alsabar._current_level / 100) * alsabar.notifications.bar_size)
-    preset.text = "["
-                .. string.rep("|", int)
-                .. string.rep(" ", alsabar.notifications.bar_size - int)
-                .. "]"
-
-    if alsabar._notify ~= nil then
-        alsabar._notify = naughty.notify ({
-            replaces_id = alsabar._notify.id,
-            preset      = preset,
-        })
-    else
-        alsabar._notify = naughty.notify ({
-            preset = preset,
-        })
-    end
-end
 
 local function worker(args)
     local args = args or {}
@@ -150,24 +129,126 @@ local function worker(args)
     newtimer("alsabar", timeout, alsabar.update)
 
     alsabar.bar:buttons (awful.util.table.join (
-          awful.button ({}, 1, function()
-            awful.util.spawn(alsabar.mixer)
-          end),
           awful.button ({}, 3, function()
-            awful.util.spawn(string.format("amixer set %s toggle", alsabar.channel))
+            awful.util.spawn(alsabar.mixer, false)
+            --awful.util.spawn ("pavucontrol", false)
+          end),
+          awful.button ({}, 1, function()
+            awful.util.spawn(string.format("amixer set %s toggle", alsabar.channel), false)
             alsabar.update()
           end),
           awful.button ({}, 4, function()
-            awful.util.spawn(string.format("amixer set %s %s+", alsabar.channel, alsabar.step))
+            awful.util.spawn(string.format("amixer set %s %s+", alsabar.channel, alsabar.step), false)
             alsabar.update()
           end),
           awful.button ({}, 5, function()
-            awful.util.spawn(string.format("amixer set %s %s-", alsabar.channel, alsabar.step))
+            awful.util.spawn(string.format("amixer set %s %s-", alsabar.channel, alsabar.step), false)
             alsabar.update()
           end)
     ))
 
     return alsabar
 end
+
+
+-- {{{ Notifications for state of volume
+function alsabar.notify()
+
+--####################
+--alsabar.update()
+
+--    local preset = {
+--        title   = "",
+--        text    = "",
+--        timeout = 4,
+--        screen  = alsabar.notifications.screen,
+--        font    = alsabar.notifications.font .. " " ..
+--                  alsabar.notifications.font_size,
+--        fg      = alsabar.notifications.color
+--    }
+
+--    if alsabar._muted
+--    then
+--        preset.title = alsabar.channel .. " - Muted"
+--    else
+--        preset.title = alsabar.channel .. " - " .. alsabar._current_level .. "%"
+--    end
+
+--    int = math.modf((alsabar._current_level / 100) * alsabar.notifications.bar_size)
+--    preset.text = "["
+--                .. string.rep("|", int)
+--                .. string.rep(" ", alsabar.notifications.bar_size - int)
+--                .. "]"
+
+--    if alsabar._notify ~= nil then
+--        alsabar._notify = naughty.notify ({
+--            replaces_id = alsabar._notify.id,
+--            preset      = preset,
+--        })
+--    else
+--        alsabar._notify = naughty.notify ({
+--            preset = preset,
+--        })
+--    end
+--####################
+
+-- begin customized notifications
+     	local preset =
+	{
+		height = 75,
+		width = 300,
+		font = alsabar.notifications.font,
+		timeout = 1.5,
+		opacity = 0.9,
+	}
+	local i = 1;
+	while alsabar.notifications.icons[i + 1] ~= nil
+	do
+		i = i + 1
+	end
+	if i >= 2
+	then
+		preset.icon_size = alsabar.notifications.icon_size
+		if alsabar._muted or alsabar._current_level == 0
+		then
+			preset.icon = alsabar.notifications.icons[1]
+		elseif alsabar._current_level == 100
+		then
+			preset.icon = alsabar.notifications.icons[i]
+		else
+			local int = math.modf (alsabar._current_level / 100 * (i - 1))
+			preset.icon = alsabar.notifications.icons[int + 2]
+		end
+	end
+	if alsabar._muted
+	then
+		preset.title = alsabar.channel .. " - Muted"
+	elseif alsabar._current_level == 0
+	then
+		preset.title = alsabar.channel .. " - 0% (muted)"
+		preset.text = "[" .. string.rep (" ", alsabar.notifications.bar_size) .. "]"
+	elseif alsabar._current_level == 100
+	then
+		preset.title = alsabar.channel .. " - 100% (max)"
+		preset.text = "[" .. string.rep ("|", alsabar.notifications.bar_size) .. "]"
+	else
+		local int = math.modf (alsabar._current_level / 100 * alsabar.notifications.bar_size)
+		preset.title = alsabar.channel .. " - " .. alsabar._current_level .. "%"
+		preset.text = "[" .. string.rep ("|", int) .. string.rep (" ", alsabar.notifications.bar_size - int) .. "]"
+	end
+	if alsabar._notify ~= nil
+	then
+		
+		alsabar._notify = naughty.notify (
+		{
+			replaces_id = alsabar._notify.id,
+			preset = preset
+		})
+	else
+		alsabar._notify = naughty.notify ({ preset = preset })
+	end
+-- end customized notifications
+end 
+--}}}
 
 return setmetatable(alsabar, { __call = function(_, ...) return worker(...) end })
