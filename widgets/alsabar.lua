@@ -26,7 +26,7 @@ local setmetatable = setmetatable
 -- lain.widgets.alsabar
 local alsabar = {
     channel = "Master",
-    step    = "2%",
+    step    = "1.26dB",--2%",
 
     colors = {
         background = beautiful.bg_normal,
@@ -49,14 +49,32 @@ local alsabar = {
         	    icons =
 	       {
 		  -- the first item is the 'muted' icon
-		  "/usr/share/icons/gnome/48x48/status/audio-volume-muted.png",
+		  "/home/philipp/Pictures/vol/16.png",
+		  "/home/philipp/Pictures/vol/15.png",
+		  "/home/philipp/Pictures/vol/14.png",
+		  "/home/philipp/Pictures/vol/13.png",
+		  "/home/philipp/Pictures/vol/12.png",
+		  "/home/philipp/Pictures/vol/11.png",
+		  "/home/philipp/Pictures/vol/10.png",
+		  "/home/philipp/Pictures/vol/09.png",
+		  "/home/philipp/Pictures/vol/08.png",
+		  "/home/philipp/Pictures/vol/07.png",
+		  "/home/philipp/Pictures/vol/06.png",
+		  "/home/philipp/Pictures/vol/05.png",
+		  "/home/philipp/Pictures/vol/04.png",
+		  "/home/philipp/Pictures/vol/03.png",
+		  "/home/philipp/Pictures/vol/02.png",
+		  "/home/philipp/Pictures/vol/01.png",
+		  "/home/philipp/Pictures/vol/00.png",
+		 
+		  --"/usr/share/icons/gnome/48x48/status/audio-volume-muted.png",
 		  -- the rest of the items correspond to intermediate volume levels - you can have as many as you want (but must be >= 1)
-		  "/usr/share/icons/gnome/48x48/status/audio-volume-low.png",
-		  "/usr/share/icons/gnome/48x48/status/audio-volume-medium.png",
-		  "/usr/share/icons/gnome/48x48/status/audio-volume-high.png"
+		  --"/usr/share/icons/gnome/48x48/status/audio-volume-low.png",
+		  --"/usr/share/icons/gnome/48x48/status/audio-volume-medium.png",
+		  --"/usr/share/icons/gnome/48x48/status/audio-volume-high.png"
 	       },
 	    font = "Monospace 10", -- must be a monospace font for the bar to be sized consistently
-	    icon_size = 48,
+	    icon_size = 96,--48,
 	    bar_size = 25 -- adjust to fit your font if the bar doesn't fit
     },
 
@@ -116,7 +134,7 @@ local function worker(args)
             alsabar.bar:set_color(alsabar.colors.mute)
         else
             alsabar._muted = false
-            alsabar.tooltip:set_text(string.format(" %s:%s ", alsabar.channel, volu))
+            alsabar.tooltip:set_text(string.format(" %s: %s %% ", alsabar.channel, volu))
             alsabar.bar:set_color(alsabar.colors.unmute)
         end
 
