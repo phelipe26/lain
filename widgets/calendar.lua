@@ -8,9 +8,9 @@
 
 local icons_dir    = require("lain.helpers").icons_dir
 
-local awful        = require("awful")
+local awful        = require("lib/awful")
 local beautiful    = require("beautiful")
-local naughty      = require("naughty")
+local naughty      = require("lib/naughty")
 
 local io           = { popen = io.popen }
 local os           = { date = os.date }

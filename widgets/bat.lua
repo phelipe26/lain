@@ -10,8 +10,8 @@
 local newtimer     = require("lain.helpers").newtimer
 local first_line   = require("lain.helpers").first_line
 
-local naughty      = require("naughty")
-local wibox        = require("wibox")
+local naughty      = require("lib/naughty")
+local wibox        = require("lib/wibox")
 
 local math         = { floor  = math.floor }
 local string       = { format = string.format }

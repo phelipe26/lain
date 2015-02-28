@@ -9,7 +9,7 @@
 
 local newtimer        = require("lain.helpers").newtimer
 
-local wibox           = require("wibox")
+local wibox           = require("lib/wibox")
 
 local io              = { popen  = io.popen }
 local string          = { match  = string.match }
