@@ -9,9 +9,9 @@
 
 local newtimer     = require("lain.helpers").newtimer
 
-local awful        = require("awful")
-local beautiful    = require("beautiful")
-local naughty      = require("naughty")
+local awful        = require("lib/awful")
+local beautiful    = require("lib/beautiful")
+local naughty      = require("lib/naughty")
 
 local io           = { popen  = io.popen }
 local math         = { modf   = math.modf }
